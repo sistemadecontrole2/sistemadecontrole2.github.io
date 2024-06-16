@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle de Gastos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #57b467;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        header {
+    background-color: #097c3d;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000; /* garante que o cabeçalho esteja acima de outros conteúdos */
+  }
+        .content {
+            padding: 20px;
+        }
+        .centered {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .centered input, .centered button {
+            margin: 5px;
+            padding: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .centered button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .centered button:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+        #input-section, #sum-display, #data-list, #new-month, #logout-button {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        #new-month, #logout-button {
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #new-month:hover, #logout-button:hover {
+            background-color: #d32f2f;
+        }
+
+        #new-month, #logout-button {
+    display: none;
+}
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    overflow-x: auto; /* Adiciona rolagem horizontal */
+    display: block; /* Necessário para ajustar o layout da tabela */
+}
+
+thead, tbody {
+    display: block; /* Ajusta a estrutura de blocos do cabeçalho e corpo */
+}
+
+thead {
+    /* Fixa o cabeçalho e define estilos */
+    background-color: #201f1f;
+    
+    
+    
+}
+
+tbody {
+    max-height: 200px; /* Altura máxima do corpo da tabela com rolagem */
+    overflow-y: auto; /* Adiciona rolagem vertical */
+}
+
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <header>
+            <h1>Sistema Controle de Contas</h1>
+        </header>
+        <div class="content">
+            <!-- Tela de Login -->
+            <div id="login-section" class="centered">
+                <input type="text" id="login-username" placeholder="Usuário">
+                <input type="password" id="login-password" placeholder="Senha">
+                <button id="login-button">Login</button>
+                <button id="show-register">Cadastrar</button>
+                <button id="show-recovery">Esqueceu a Senha?</button>
+            </div>
+
+            <!-- Tela de Cadastro -->
+            <div id="register-section" class="centered hidden">
+                <input type="text" id="register-username" placeholder="Novo Usuário">
+                <input type="password" id="register-password" placeholder="Nova Senha">
+                <input type="email" id="register-email" placeholder="Email">
+                <button id="register-button">Cadastrar</button>
+                <button id="back-to-login">Voltar ao Login</button>
+            </div>
+
+           <!-- Tela de Recuperação -->
+<div id="recovery-section" class="centered hidden">
+    <input type="email" id="recovery-email" placeholder="Email">
+    <button id="recovery-button">Recuperar Senha</button>
+    <button id="back-to-login-from-recovery">Voltar ao Login</button>
+</div>
+
+<!-- Tela de Verificação de Código -->
+<div id="code-verification-section" class="centered hidden">
+    <p>Informe o código recebido no email:</p>
+    <input type="text" id="recovery-code" placeholder="Código de Recuperação">
+    <button id="verify-code-button">Verificar Código</button>
+    <button id="back-to-recovery">Voltar</button>
+</div>
+
+
+
+
+
+<!-- Tela de Criação de Novo Login e Senha -->
+<div id="create-new-login-section" class="centered hidden">
+    <input type="text" id="new-username" placeholder="Novo Usuário">
+    <input type="password" id="new-password" placeholder="Nova Senha">
+    <button id="create-new-login-button">Criar Novo Login</button>
+</div>
+
+
+
+
+
+
+
+            <!-- Sistema de Controle de Gastos -->
+             <header>
+            <div id="input-section" class="centered hidden">
+                <input type="number" id="value-input" placeholder="Informe o valor" step="0.01" min="0">
+                <button id="submit-value">Adicionar Valor</button>
+            </div>
+            <div id="sum-display" class="centered hidden">TOTAL: R$ 0,00</div>
+            <div id="data-list" class="hidden">
+                <table id="data-table">
+
+                </header>
+    <thead align="center">
+        <tr>
+            <th>Data e Hora</th>
+            <th>Valor</th>
+            <th>Informação</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody align="center">
+        <!-- Dados serão inseridos aqui -->
+    </tbody>
+</table>
+
+            </div>
+
+            
+
+            <button id="logout-button" class="hidden">Sair</button>
+
+            
+
+            <h4 align="center"><h1>Controle de Contas</h1>Desenvolvido Por: Jonas Martins
+                <br>
+                Acesse Minha Página:<a href="https://jonasmartins2.github.io/">CLIQUE AQUI</a>
+
+            </h4>
+            
+            <button id="new-month" class="hidden">Novo Mês</button>
+            
+        </div>
+    </div>
+
+    <script>
+  function loadData() {
+    const data = JSON.parse(localStorage.getItem('gastos') || '[]');
+    const tbody = document.querySelector("#data-table tbody");
+    tbody.innerHTML = ''; // Limpa a tabela antes de inserir novos dados
+    data.forEach((entry, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${entry.date}</td>
+            <td>R$ ${entry.value}</td>
+            <td>${entry.local}</td>
+            <td>
+                <button onclick="editDate(${index})">Editar Data</button>
+                <button onclick="deleteValue(${index})">Excluir</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    updateSum();
+}
+
+  
+        // Função para carregar dados do localStorage
+        function loadData() {
+            const data = JSON.parse(localStorage.getItem('gastos') || '[]');
+            const tbody = document.querySelector("#data-table tbody");
+            tbody.innerHTML = ''; // Limpa a tabela antes de inserir novos dados
+            data.forEach((entry, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${entry.date}</td>
+                    <td>R$ ${entry.value}</td>
+                    <td>${entry.local}</td>
+                    <td>
+                        <button onclick="editDate(${index})">Editar Data</button>
+                        <button onclick="deleteValue(${index})">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            updateSum();
+        }
+
+        // Função para adicionar um novo valor
+        function addValue(value, local) {
+            const date = new Date().toLocaleString('pt-BR');
+            const newEntry = { date, value: parseFloat(value).toFixed(2), local };
+
+            let data = JSON.parse(localStorage.getItem('gastos') || '[]');
+            data.push(newEntry);
+            localStorage.setItem('gastos', JSON.stringify(data));
+
+            loadData(); // Atualiza a tabela com os novos dados
+        }
+
+        // Função para editar a data de um valor
+        function editDate(index) {
+            const data = JSON.parse(localStorage.getItem('gastos') || '[]');
+            const newDate = prompt('Informe a nova data (formato: DD/MM/AAAA HH:MM):', data[index].date);
+            if (newDate && newDate.trim() !== '') {
+                data[index].date = newDate.trim();
+                localStorage.setItem('gastos', JSON.stringify(data));
+                loadData(); // Recarrega a tabela
+            }
+        }
+
+        // Função para excluir um valor
+        function deleteValue(index) {
+            if (confirm('Tem certeza que deseja excluir este valor?')) {
+                let data = JSON.parse(localStorage.getItem('gastos') || '[]');
+                data.splice(index, 1);
+                localStorage.setItem('gastos', JSON.stringify(data));
+                loadData(); // Recarrega a tabela
+            }
+        }
+
+        // Função para calcular e atualizar a soma dos valores
+        function updateSum() {
+            const data = JSON.parse(localStorage.getItem('gastos') || '[]');
+            const total = data.reduce((sum, entry) => sum + parseFloat(entry.value), 0);
+            document.getElementById('sum-display').textContent = `Soma Total: R$ ${total.toFixed(2)}`;
+        }
+
+       // Função para enviar código de recuperação de senha
+function sendRecoveryCode(email) {
+    const code = Math.floor(1000 + Math.random() * 9000); // Gera um código de 4 dígitos
+    localStorage.setItem('recoveryCode', JSON.stringify({ email, code }));
+
+    // Simulação de envio de e-mail
+    alert(`Código de recuperação enviado para: ${email}. Código: ${code}`);
+
+    // Mostra a tela de verificação de código
+    document.getElementById('recovery-section').classList.add('hidden');
+    document.getElementById('code-verification-section').classList.remove('hidden');
+}
+
+// Evento do botão de recuperação de senha
+document.getElementById('recovery-button').addEventListener('click', () => {
+    const email = document.getElementById('recovery-email').value;
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const user = users.find(u => u.email === email);
+    
+    if (user) {
+        sendRecoveryCode(email);
+    } else {
+        alert('Email não encontrado.');
+    }
+});
+
+// Evento do botão de verificação de código
+document.getElementById('verify-code-button').addEventListener('click', () => {
+    const storedData = JSON.parse(localStorage.getItem('recoveryCode') || '{}');
+    const enteredCode = document.getElementById('recovery-code').value;
+
+    if (enteredCode === storedData.code.toString()) {
+        alert('Código correto! Você pode agora criar uma nova senha e login.');
+
+        // Mostra a tela de criação de novo login e senha
+        document.getElementById('code-verification-section').classList.add('hidden');
+        document.getElementById('create-new-login-section').classList.remove('hidden');
+    } else {
+        alert('Código incorreto. Tente novamente.');
+    }
+});
+
+// Evento do botão "Criar Novo Login"
+document.getElementById('create-new-login-button').addEventListener('click', () => {
+    const newUsername = document.getElementById('new-username').value;
+    const newPassword = document.getElementById('new-password').value;
+
+    if (newUsername && newPassword) {
+        let users = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Verifica se já existe um usuário com o mesmo nome e exclui se existir
+        const existingUserIndex = users.findIndex(u => u.username === newUsername);
+        if (existingUserIndex !== -1) {
+            users.splice(existingUserIndex, 1); // Remove o usuário existente
+        }
+
+        // Adiciona o novo usuário
+        users.push({ username: newUsername, password: newPassword });
+        localStorage.setItem('users', JSON.stringify(users));
+
+        // Limpa campos e volta para a tela de login
+        document.getElementById('new-username').value = '';
+        document.getElementById('new-password').value = '';
+        alert('Novo login criado com sucesso!');
+        showLogin(); // Mostra a tela de login
+
+        // Oculta a tela de criação de novo login e senha
+        document.getElementById('create-new-login-section').classList.add('hidden');
+    } else {
+        alert('Todos os campos são obrigatórios.');
+    }
+});
+
+
+
+// Evento do botão "Voltar" na tela de verificação de código
+document.getElementById('back-to-recovery').addEventListener('click', () => {
+    document.getElementById('code-verification-section').classList.add('hidden');
+    document.getElementById('recovery-section').classList.remove('hidden');
+});
+
+
+
+
+        // Evento do botão de adicionar valor
+        document.getElementById('submit-value').addEventListener('click', () => {
+            const value = document.getElementById('value-input').value;
+            if (value === '' || isNaN(value) || parseFloat(value) <= 0) {
+                alert('Por favor, informe um valor válido.');
+                return;
+            }
+
+            const local = prompt('Informe o local onde foi utilizado este valor:');
+            if (local && local.trim() !== '') {
+                addValue(value, local.trim());
+                document.getElementById('value-input').value = ''; // Limpa o campo de entrada
+            } else {
+                alert('Local não pode estar vazio.');
+            }
+        });
+
+        
+
+        // Evento do botão de novo mês
+        document.getElementById('new-month').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja iniciar um novo mês? Isso limpará todos os dados atuais.')) {
+                localStorage.removeItem('gastos');
+                loadData(); // Limpa a tabela
+            }
+        });
+
+        // Evento do botão de logout
+        document.getElementById('logout-button').addEventListener('click', () => {
+            alert('Você foi deslogado com sucesso!');
+            showLogin(); // Mostra a tela de login
+            hideSystem(); // Esconde a tela do sistema
+        });
+
+        // Evento do botão de login
+        document.getElementById('login-button').addEventListener('click', () => {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                alert('Login bem-sucedido!');
+                showSystem();
+            } else {
+                alert('Usuário ou senha incorretos.');
+            }
+        });
+
+        // Evento de cadastro
+        document.getElementById('register-button').addEventListener('click', () => {
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const email = document.getElementById('register-email').value;
+
+            if (username && password && email) {
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                if (users.find(u => u.username === username)) {
+                    alert('Usuário já existe.');
+                } else {
+                    users.push({ username, password, email });
+                    localStorage.setItem('users', JSON.stringify(users));
+                    alert('Cadastro bem-sucedido!');
+                    document.getElementById('register-username').value = '';
+                    document.getElementById('register-password').value = '';
+                    document.getElementById('register-email').value = '';
+                    showLogin();
+                }
+            } else {
+                alert('Todos os campos são obrigatórios.');
+            }
+        });
+
+       
+
+        // Função para mostrar a tela de login
+        function showLogin() {
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('register-section').classList.add('hidden');
+            document.getElementById('recovery-section').classList.add('hidden');
+        }
+
+
+
+
+
+
+        // Função para esconder a tela do sistema ao deslogar
+function hideSystem() {
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('register-section').classList.add('hidden');
+    document.getElementById('recovery-section').classList.add('hidden');
+    document.getElementById('input-section').style.display = 'none';
+    document.getElementById('sum-display').style.display = 'none';
+    document.getElementById('data-list').style.display = 'none';
+    document.getElementById('new-month').style.display = 'none';
+    document.getElementById('logout-button').style.display = 'none';
+}
+
+
+
+
+
+
+        // Função para mostrar a tela de cadastro
+        function showRegister() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('register-section').classList.remove('hidden');
+            document.getElementById('recovery-section').classList.add('hidden');
+        }
+
+        // Função para mostrar a tela de recuperação de senha
+        function showRecovery() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('register-section').classList.add('hidden');
+            document.getElementById('recovery-section').classList.remove('hidden');
+        }
+
+        // Função para mostrar o sistema após login bem-sucedido
+        function showSystem() {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('register-section').classList.add('hidden');
+            document.getElementById('recovery-section').classList.add('hidden');
+            document.getElementById('input-section').style.display = 'flex';
+            document.getElementById('sum-display').style.display = 'flex';
+            document.getElementById('data-list').style.display = 'block';
+            document.getElementById('new-month').style.display = 'block';
+            document.getElementById('logout-button').style.display = 'block';
+            loadData(); // Carrega os dados ao iniciar
+        }
+
+        // Função para esconder a tela do sistema ao deslogar
+        function hideSystem() {
+            document.getElementById('input-section').style.display = 'none';
+            document.getElementById('sum-display').style.display = 'none';
+            document.getElementById('data-list').style.display = 'none';
+            document.getElementById('new-month').style.display = 'none';
+            document.getElementById('logout-button').style.display = 'none';
+        }
+
+        // Evento para mostrar a tela de cadastro
+        document.getElementById('show-register').addEventListener('click', showRegister);
+        // Evento para voltar para a tela de login do cadastro
+        document.getElementById('back-to-login').addEventListener('click', showLogin);
+        // Evento para mostrar a tela de recuperação de senha
+        document.getElementById('show-recovery').addEventListener('click', showRecovery);
+        // Evento para voltar para a tela de login da recuperação
+        document.getElementById('back-to-login-from-recovery').addEventListener('click', showLogin);
+
+        // Carrega a tela de login ao iniciar
+        window.onload = showLogin;
+    </script>
+</body>
+</html>
